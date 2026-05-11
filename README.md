@@ -48,3 +48,4 @@ resultados/oficial
 - ✅ 3 puntos → resultado exacto
 - ⚡ 1 punto  → ganador o empate correcto
 - ❌ 0 puntos → sin acierto
+# prode-mundial26

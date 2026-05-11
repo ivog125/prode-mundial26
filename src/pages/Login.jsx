@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -8,7 +9,8 @@ import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 import { auth, db } from "../lib/firebase";
 
 export default function Login() {
-  const [modo, setModo]         = useState("login"); // "login" | "registro" | "recovery"
+  const navigate = useNavigate();
+  const [modo, setModo]         = useState("login");
   const [nombre, setNombre]     = useState("");
   const [email, setEmail]       = useState("");
   const [password, setPassword] = useState("");
@@ -41,6 +43,7 @@ export default function Login() {
         });
       } else {
         await signInWithEmailAndPassword(auth, email, password);
+        navigate("/fixture");
       }
     } catch (err) {
       const msgs = {
@@ -61,7 +64,6 @@ export default function Login() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-green-800 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        {/* Header */}
         <div className="text-center mb-8">
           <div className="text-6xl mb-3">🏆</div>
           <h1 className="text-3xl font-bold text-white">Prode Mundial 2026</h1>

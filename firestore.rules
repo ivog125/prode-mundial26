@@ -1,0 +1,41 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAdmin() {
+      return request.auth != null
+        && get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data.esAdmin == true;
+    }
+
+    function isActive() {
+      return request.auth != null
+        && get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data.activo == true;
+    }
+
+    // Usuarios
+    match /usuarios/{userId} {
+      allow read:   if request.auth != null;
+      allow create: if request.auth.uid == userId;
+      allow update: if request.auth.uid == userId || isAdmin();
+    }
+
+    // Pronósticos: usuario activo escribe los suyos
+    // El bloqueo real se valida comparando con la colección partidos
+    match /pronosticos/{userId} {
+      allow read:  if request.auth.uid == userId || isAdmin();
+      allow write: if request.auth.uid == userId && isActive();
+    }
+
+    // Resultados oficiales: solo admin escribe, activos leen
+    match /resultados/{docId} {
+      allow read:  if isActive();
+      allow write: if isAdmin();
+    }
+
+    // Partidos (para bloqueo server-side): todos leen, solo admin escribe
+    match /partidos/{matchId} {
+      allow read:  if request.auth != null;
+      allow write: if isAdmin();
+    }
+  }
+}
